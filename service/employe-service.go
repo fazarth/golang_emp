@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/fazarth/golang_emp/dto"
+	"github.com/fazarth/golang_emp/entity"
+	"github.com/fazarth/golang_emp/repository"
 	"github.com/mashingan/smapping"
-	"github.com/ydhnwb/golang_api/dto"
-	"github.com/ydhnwb/golang_api/entity"
-	"github.com/ydhnwb/golang_api/repository"
 )
 
 //EmployeService is a ....

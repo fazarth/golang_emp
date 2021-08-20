@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/fazarth/golang_emp/config"
+	"github.com/fazarth/golang_emp/controller"
+	"github.com/fazarth/golang_emp/middleware"
+	"github.com/fazarth/golang_emp/repository"
+	"github.com/fazarth/golang_emp/service"
 	"github.com/gin-gonic/gin"
-	"github.com/ydhnwb/golang_api/config"
-	"github.com/ydhnwb/golang_api/controller"
-	"github.com/ydhnwb/golang_api/middleware"
-	"github.com/ydhnwb/golang_api/repository"
-	"github.com/ydhnwb/golang_api/service"
 	"gorm.io/gorm"
 )
 

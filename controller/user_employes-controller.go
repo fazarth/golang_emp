@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/fazarth/golang_emp/dto"
+	"github.com/fazarth/golang_emp/entity"
+	"github.com/fazarth/golang_emp/helper"
+	"github.com/fazarth/golang_emp/service"
 	"github.com/gin-gonic/gin"
-	"github.com/ydhnwb/golang_api/dto"
-	"github.com/ydhnwb/golang_api/entity"
-	"github.com/ydhnwb/golang_api/helper"
-	"github.com/ydhnwb/golang_api/service"
 )
 
 //User_EmployeController is a ...

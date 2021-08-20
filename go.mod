@@ -1,4 +1,4 @@
-module github.com/ydhnwb/golang_api
+module github.com/fazarth/golang_emp
 
 go 1.15
 
