@@ -1,65 +1,64 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/ydhnwb/golang_api/entity"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-//EmployeRepository is contract what employRepository can do to db
+//EmployeRepository is a ....
 type EmployeRepository interface {
-	InsertEmploye(employ entity.Employe) entity.Employe
-	UpdateEmploye(employ entity.Employe) entity.Employe
-	IsDuplicateEmail(email string) (tx *gorm.DB)
-	FindByEmail(email string) entity.Employe
-	ProfileEmploye(employID string) entity.Employe
+	InsertEmploye(b entity.Employe) entity.Employe
+	UpdateEmploye(b entity.Employe) entity.Employe
+	DeleteEmploye(b entity.Employe)
+	AllEmploye() []entity.Employe
+	FindEmployeByID(employeID uint64) entity.Employe
+	VerifyCredential(email string, password string) interface{}
 }
 
-type employConnection struct {
+type employeConnection struct {
 	connection *gorm.DB
 }
 
-//NewEmployeRepository is creates a new instance of EmployeRepository
-func NewEmployeRepository(db *gorm.DB) EmployeRepository {
-	return &employConnection{
-		connection: db,
+//NewEmployeRepository creates an instance EmployeRepository
+func NewEmployeRepository(dbConn *gorm.DB) EmployeRepository {
+	return &employeConnection{
+		connection: dbConn,
 	}
 }
 
-func (db *employConnection) InsertEmploye(employ entity.Employe) entity.Employe {
-	db.connection.Save(&employ)
-	return employ
+func (db *employeConnection) InsertEmploye(b entity.Employe) entity.Employe {
+	db.connection.Save(&b)
+	db.connection.Preload("Employe").Find(&b)
+	return b
 }
 
-func (db *employConnection) UpdateEmploye(employ entity.Employe) entity.Employe {
-	db.connection.Save(&employ)
-	return employ
+func (db *employeConnection) UpdateEmploye(b entity.Employe) entity.Employe {
+	db.connection.Save(&b)
+	db.connection.Preload("Employe").Find(&b)
+	return b
 }
 
-func (db *employConnection) IsDuplicateEmail(email string) (tx *gorm.DB) {
-	var employ entity.Employe
-	return db.connection.Where("email = ?", email).Take(&employ)
-}
-
-func (db *employConnection) FindByEmail(email string) entity.Employe {
-	var employ entity.Employe
-	db.connection.Where("email = ?", email).Take(&employ)
-	return employ
-}
-
-func (db *employConnection) ProfileEmploye(employID string) entity.Employe {
-	var employ entity.Employe
-	db.connection.Preload("Books").Preload("Books.Employe").Find(&employ, employID)
-	return employ
-}
-
-func hashAndSalt(pwd []byte) string {
-	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
-	if err != nil {
-		log.Println(err)
-		panic("Failed to hash a password")
+func (db *employeConnection) VerifyCredential(email string, password string) interface{} {
+	var employe entity.Employe
+	res := db.connection.Where("email = ?", email).Take(&employe)
+	if res.Error == nil {
+		return employe
 	}
-	return string(hash)
+	return nil
+}
+
+func (db *employeConnection) DeleteEmploye(b entity.Employe) {
+	db.connection.Delete(&b)
+}
+
+func (db *employeConnection) FindEmployeByID(employeID uint64) entity.Employe {
+	var employe entity.Employe
+	db.connection.Preload("Employe").Find(&employe, employeID)
+	return employe
+}
+
+func (db *employeConnection) AllEmploye() []entity.Employe {
+	var employes []entity.Employe
+	db.connection.Preload("Employe").Find(&employes)
+	return employes
 }

@@ -6,7 +6,7 @@ import "time"
 type User struct {
 	ID				      uint64 `gorm:"primary_key:auto_increment" json:"user_id"`
 	Employe_ID      uint64 `gorm:"not null" json:"-"`
-	Employe        	Employe   `gorm:"foreignkey:Employe_ID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"user"`
+	Employe        	Employe   `gorm:"foreignkey:Employe_ID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"employe"`
 	User_name				string `gorm:"type:varchar(255)" json:"user_name"`
 	Password				string `gorm:"->;<-;not null" json:"-"`
 	Is_Default			bool `gorm:"type:char(1)" json:"is_default"`

@@ -13,8 +13,8 @@ import (
 	"github.com/ydhnwb/golang_api/service"
 )
 
-//EmployeController is a ...
-type EmployeController interface {
+//User_EmployeController is a ...
+type User_EmployeController interface {
 	All(context *gin.Context)
 	FindByID(context *gin.Context)
 	Insert(context *gin.Context)
@@ -22,26 +22,26 @@ type EmployeController interface {
 	Delete(context *gin.Context)
 }
 
-type employeController struct {
-	employeService service.EmployeService
+type user_employeController struct {
+	user_employeService service.User_EmployeService
 	jwtService  service.JWTService
 }
 
-//NewEmployeController create a new instances of BoookController
-func NewEmployeController(employeServ service.EmployeService, jwtServ service.JWTService) EmployeController {
-	return &employeController{
-		employeService: employeServ,
+//NewUser_EmployeController create a new instances of BoookController
+func NewUser_EmployeController(user_employeServ service.User_EmployeService, jwtServ service.JWTService) User_EmployeController {
+	return &user_employeController{
+		user_employeService: user_employeServ,
 		jwtService:  jwtServ,
 	}
 }
 
-func (c *employeController) All(context *gin.Context) {
-	var employes []entity.Employe = c.employeService.All()
-	res := helper.BuildResponse(true, "OK", employes)
+func (c *user_employeController) All(context *gin.Context) {
+	var user_employes []entity.User_Employe = c.user_employeService.All()
+	res := helper.BuildResponse(true, "OK", user_employes)
 	context.JSON(http.StatusOK, res)
 }
 
-func (c *employeController) FindByID(context *gin.Context) {
+func (c *user_employeController) FindByID(context *gin.Context) {
 	id, err := strconv.ParseUint(context.Param("id"), 0, 0)
 	if err != nil {
 		res := helper.BuildErrorResponse("No param id was found", err.Error(), helper.EmptyObj{})
@@ -49,38 +49,38 @@ func (c *employeController) FindByID(context *gin.Context) {
 		return
 	}
 
-	var employe entity.Employe = c.employeService.FindByID(id)
-	if (employe == entity.Employe{}) {
+	var user_employe entity.User_Employe = c.user_employeService.FindByID(id)
+	if (user_employe == entity.User_Employe{}) {
 		res := helper.BuildErrorResponse("Data not found", "No data with given id", helper.EmptyObj{})
 		context.JSON(http.StatusNotFound, res)
 	} else {
-		res := helper.BuildResponse(true, "OK", employe)
+		res := helper.BuildResponse(true, "OK", user_employe)
 		context.JSON(http.StatusOK, res)
 	}
 }
 
-func (c *employeController) Insert(context *gin.Context) {
-	var employeCreateDTO dto.EmployeCreateDTO
-	errDTO := context.ShouldBind(&employeCreateDTO)
+func (c *user_employeController) Insert(context *gin.Context) {
+	var user_employeCreateDTO dto.User_EmployeCreateDTO
+	errDTO := context.ShouldBind(&user_employeCreateDTO)
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, res)
 	} else {
 		authHeader := context.GetHeader("Authorization")
-		employeID := c.getEmployeIDByToken(authHeader)
-		convertedEmployeID, err := strconv.ParseUint(employeID, 10, 64)
+		user_employeID := c.getUser_EmployeIDByToken(authHeader)
+		convertedUser_EmployeID, err := strconv.ParseUint(user_employeID, 10, 64)
 		if err == nil {
-			employeCreateDTO.Employe_ID = convertedEmployeID
+			user_employeCreateDTO.ID = convertedUser_EmployeID
 		}
-		result := c.employeService.Insert(employeCreateDTO)
+		result := c.user_employeService.Insert(user_employeCreateDTO)
 		response := helper.BuildResponse(true, "OK", result)
 		context.JSON(http.StatusCreated, response)
 	}
 }
 
-func (c *employeController) Update(context *gin.Context) {
-	var employeUpdateDTO dto.EmployeUpdateDTO
-	errDTO := context.ShouldBind(&employeUpdateDTO)
+func (c *user_employeController) Update(context *gin.Context) {
+	var user_employeUpdateDTO dto.User_EmployeUpdateDTO
+	errDTO := context.ShouldBind(&user_employeUpdateDTO)
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, res)
@@ -93,13 +93,13 @@ func (c *employeController) Update(context *gin.Context) {
 		panic(errToken.Error())
 	}
 	claims := token.Claims.(jwt.MapClaims)
-	employeID := fmt.Sprintf("%v", claims["employe_id"])
-	if c.employeService.IsAllowedToEdit(employeID, employeUpdateDTO.Employe_ID) {
-		id, errID := strconv.ParseUint(employeID, 10, 64)
+	user_employeID := fmt.Sprintf("%v", claims["user_employe_id"])
+	if c.user_employeService.IsAllowedToEdit(user_employeID, user_employeUpdateDTO.ID) {
+		id, errID := strconv.ParseUint(user_employeID, 10, 64)
 		if errID == nil {
-			employeUpdateDTO.Employe_ID = id
+			user_employeUpdateDTO.ID = id
 		}
-		result := c.employeService.Update(employeUpdateDTO)
+		result := c.user_employeService.Update(user_employeUpdateDTO)
 		response := helper.BuildResponse(true, "OK", result)
 		context.JSON(http.StatusOK, response)
 	} else {
@@ -108,23 +108,23 @@ func (c *employeController) Update(context *gin.Context) {
 	}
 }
 
-func (c *employeController) Delete(context *gin.Context) {
-	var employe entity.Employe
+func (c *user_employeController) Delete(context *gin.Context) {
+	var user_employe entity.User_Employe
 	id, err := strconv.ParseUint(context.Param("id"), 0, 0)
 	if err != nil {
 		response := helper.BuildErrorResponse("Failed tou get id", "No param id were found", helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, response)
 	}
-	employe.ID = id
+	user_employe.ID = id
 	authHeader := context.GetHeader("Authorization")
 	token, errToken := c.jwtService.ValidateToken(authHeader)
 	if errToken != nil {
 		panic(errToken.Error())
 	}
 	claims := token.Claims.(jwt.MapClaims)
-	employeID := fmt.Sprintf("%v", claims["employe_id"])
-	if c.employeService.IsAllowedToEdit(employeID, employe.ID) {
-		c.employeService.Delete(employe)
+	user_employeID := fmt.Sprintf("%v", claims["user_employe_id"])
+	if c.user_employeService.IsAllowedToEdit(user_employeID, user_employe.ID) {
+		c.user_employeService.Delete(user_employe)
 		res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
 		context.JSON(http.StatusOK, res)
 	} else {
@@ -133,12 +133,12 @@ func (c *employeController) Delete(context *gin.Context) {
 	}
 }
 
-func (c *employeController) getEmployeIDByToken(token string) string {
+func (c *user_employeController) getUser_EmployeIDByToken(token string) string {
 	aToken, err := c.jwtService.ValidateToken(token)
 	if err != nil {
 		panic(err.Error())
 	}
 	claims := aToken.Claims.(jwt.MapClaims)
-	id := fmt.Sprintf("%v", claims["employe_id"])
+	id := fmt.Sprintf("%v", claims["user_employe_id"])
 	return id
 }
